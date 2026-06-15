@@ -1,0 +1,46 @@
+<view class="page-shell about-page">
+  <view class="header">
+    <text class="eyebrow">我的</text>
+    <text class="title">设置与说明</text>
+    <text class="subtitle">查看数据来源、隐私说明和上线配置状态。</text>
+  </view>
+
+  <view class="card glass-card">
+    <text class="card-title">上线前检查</text>
+    <view wx:for="{{checks}}" wx:key="*this" class="check-row">
+      <text class="dot"></text>
+      <text>{{item}}</text>
+    </view>
+  </view>
+
+  <view class="card glass-card">
+    <text class="card-title">天气服务配置</text>
+    <text class="paragraph">正式上线建议通过云函数保存和风天气配置，避免把敏感配置直接暴露在前端。</text>
+    <button class="copy-button" bindtap="copyEnvName">复制变量名</button>
+  </view>
+
+  <view class="card glass-card">
+    <text class="card-title">隐私与数据</text>
+    <text class="paragraph">默认手动选择城市，不强制定位。洗车记录只保存在本机小程序缓存中，不上传用户身份信息。</text>
+  </view>
+
+  <view class="card glass-card">
+    <text class="card-title">数据来源</text>
+    <text class="paragraph">天气与城市数据来自和风天气 API。正式上线时请遵守服务条款，并在小程序内保留必要的数据来源说明。</text>
+  </view>
+
+  <view class="bottom-nav">
+    <button class="bottom-nav-item nav-slot-1" bindtap="goIndex">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-muted.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">洗车指数</text>
+    </button>
+    <button class="bottom-nav-item nav-slot-2" bindtap="goRecord">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-muted.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">洗车记录</text>
+    </button>
+    <button class="bottom-nav-item nav-slot-3 active">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-active.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">我的</text>
+    </button>
+  </view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "getWashAdvice",
+  "version": "1.0.0",
+  "description": "Fetch QWeather forecast and calculate car wash advice.",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

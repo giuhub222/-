@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/city/city",
+    "pages/record/record",
+    "pages/about/about"
+  ],
+  "window": {
+    "navigationBarTitleText": "洗车指数查询",
+    "navigationBarBackgroundColor": "#2f86f6",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f9ff",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

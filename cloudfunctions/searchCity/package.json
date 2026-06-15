@@ -1,0 +1,9 @@
+{
+  "name": "searchCity",
+  "version": "1.0.0",
+  "description": "Search QWeather city lookup API.",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

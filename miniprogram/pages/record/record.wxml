@@ -1,0 +1,43 @@
+<view class="page-shell">
+  <view class="hero glass-card">
+    <text class="eyebrow">记录</text>
+    <text class="title">上次洗车</text>
+    <text class="big">{{lastWashText}}</text>
+    <button class="primary-button" bindtap="addToday">我今天洗车了</button>
+  </view>
+
+  <view class="section-head">
+    <text>历史记录</text>
+    <button wx:if="{{records.length}}" bindtap="clearAll">清空</button>
+  </view>
+
+  <view wx:if="{{!records.length}}" class="empty glass-card">
+    <text>还没有记录</text>
+    <text class="muted">记录一次洗车后，首页会用它展示“上次洗车”。</text>
+  </view>
+
+  <view wx:else class="record-list">
+    <view wx:for="{{records}}" wx:key="date" class="record-row glass-card">
+      <view>
+        <text class="record-date">{{item.date}}</text>
+        <text class="record-source">本机记录</text>
+      </view>
+      <text class="record-ago">{{item.ago}}</text>
+    </view>
+  </view>
+
+  <view class="bottom-nav">
+    <button class="bottom-nav-item nav-slot-1" bindtap="goIndex">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-muted.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">洗车指数</text>
+    </button>
+    <button class="bottom-nav-item nav-slot-2 active">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-active.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">洗车记录</text>
+    </button>
+    <button class="bottom-nav-item nav-slot-3" bindtap="goAbout">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-muted.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">我的</text>
+    </button>
+  </view>
+</view>

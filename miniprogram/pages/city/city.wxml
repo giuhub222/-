@@ -1,0 +1,61 @@
+<view class="page-shell">
+  <view class="city-header">
+    <text class="eyebrow">城市</text>
+    <text class="title">选择洗车城市</text>
+    <text class="subtitle">选好常用位置后，首页会按当地天气给出洗车建议。</text>
+  </view>
+
+  <view class="region-picker glass-card" bindtap="toggleSelector">
+    <view>
+      <text class="picker-label">当前选择</text>
+      <text class="picker-value">{{selectedRegionText}}</text>
+    </view>
+    <text class="picker-action">{{selectorOpen ? "收起" : "更换"}}</text>
+  </view>
+
+  <view wx:if="{{selectorOpen}}" class="selector-panel glass-card">
+    <view class="selector-head">
+      <text>请选择地区</text>
+      <text class="selector-current">{{selectedRegionText}}</text>
+    </view>
+    <view class="selector-columns">
+      <scroll-view class="selector-column" scroll-y scroll-into-view="{{provinceAnchor}}">
+        <view
+          wx:for="{{provinceList}}"
+          wx:key="code"
+          id="province-{{item.code}}"
+          class="selector-option {{index === regionValue[0] ? 'active' : ''}}"
+          data-index="{{index}}"
+          bindtap="handleProvinceTap"
+        >{{item.name}}</view>
+      </scroll-view>
+      <scroll-view class="selector-column" scroll-y scroll-into-view="{{cityAnchor}}">
+        <view
+          wx:for="{{cityList}}"
+          wx:key="code"
+          id="city-{{item.code}}"
+          class="selector-option {{index === regionValue[1] ? 'active' : ''}}"
+          data-index="{{index}}"
+          bindtap="handleCityTap"
+        >{{item.name}}</view>
+      </scroll-view>
+      <scroll-view class="selector-column" scroll-y scroll-into-view="{{countyAnchor}}">
+        <view
+          wx:for="{{countyList}}"
+          wx:key="code"
+          id="county-{{item.code}}"
+          class="selector-option {{index === regionValue[2] ? 'active' : ''}}"
+          data-index="{{index}}"
+          bindtap="handleCountyTap"
+        >{{item.name}}</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view class="hint-card">
+    <text class="hint-title">选择到区县更准确</text>
+    <text class="hint-desc">天气可能因城区不同略有差异，建议选择你平时洗车或停车的位置。</text>
+  </view>
+
+  <button class="back-home-button" bindtap="goIndex">返回洗车指数</button>
+</view>

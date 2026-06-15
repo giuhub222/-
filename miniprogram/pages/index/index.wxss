@@ -1,0 +1,626 @@
+.index-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 0 28rpx 198rpx;
+  color: #202938;
+  background: linear-gradient(180deg, #2f86f6 0rpx, #69adff 388rpx, #f5f9ff 389rpx, #f5f9ff 100%);
+}
+
+.index-page::after {
+  content: "";
+  position: absolute;
+  top: 346rpx;
+  left: -120rpx;
+  right: -120rpx;
+  height: 152rpx;
+  border-radius: 0 0 52% 52%;
+  background: #f5f9ff;
+  transform: rotate(-5deg);
+  z-index: 0;
+}
+
+.blue-hero,
+.center-state,
+.error-card,
+.today-card,
+.section-head,
+.forecast-card,
+.tip-card,
+.record-button {
+  position: relative;
+  z-index: 1;
+}
+
+.blue-hero {
+  min-height: 258rpx;
+  padding-top: 54rpx;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.city-entry {
+  max-width: 310rpx;
+  min-width: 0;
+  height: 74rpx;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+}
+
+.city-pin {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 10rpx;
+  flex: 0 0 auto;
+}
+
+.city-name {
+  min-width: 0;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.city-arrow {
+  width: 22rpx;
+  height: 22rpx;
+  margin-left: 10rpx;
+  flex: 0 0 auto;
+}
+
+.update-time {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 24rpx;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.update-time text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.refresh-button {
+  width: 46rpx;
+  height: 46rpx;
+  margin-left: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 31rpx;
+  line-height: 1;
+}
+
+.refresh-icon {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.center-state {
+  min-height: 420rpx;
+  margin-top: -64rpx;
+  padding: 80rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  color: #6380a7;
+  font-size: 26rpx;
+}
+
+.spinner {
+  width: 46rpx;
+  height: 46rpx;
+  border: 6rpx solid rgba(47, 134, 246, 0.16);
+  border-top-color: #2f86f6;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.today-card {
+  margin-top: -78rpx;
+  padding: 34rpx 28rpx 32rpx;
+  border-radius: 28rpx;
+}
+
+.today-main {
+  display: flex;
+  align-items: stretch;
+}
+
+.today-left {
+  flex: 0 0 318rpx;
+  min-width: 0;
+  padding: 0 28rpx 0 2rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.today-title {
+  width: 100%;
+  margin-bottom: 22rpx;
+  color: #242a35;
+  font-size: 25rpx;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.decision-main {
+  color: #34b96a;
+  font-size: 48rpx;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.decision-main.caution {
+  color: #f59e0b;
+}
+
+.decision-main.bad {
+  color: #dd2631;
+}
+
+.face-large {
+  width: 122rpx;
+  height: 122rpx;
+  margin: 22rpx 0 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #34c66c;
+  font-size: 66rpx;
+  line-height: 1;
+  background: rgba(52, 198, 108, 0.08);
+  border: 7rpx solid #34c66c;
+  border-radius: 50%;
+  box-shadow: 0 0 0 15rpx rgba(52, 198, 108, 0.12);
+}
+
+.decision-icon {
+  width: 78rpx;
+  height: 78rpx;
+}
+
+.face-large.caution {
+  color: #f5b400;
+  background: rgba(245, 180, 0, 0.08);
+  border-color: #f5b400;
+  box-shadow: 0 0 0 15rpx rgba(245, 180, 0, 0.13);
+}
+
+.face-large.bad {
+  color: #ff5b52;
+  background: rgba(255, 91, 82, 0.08);
+  border-color: #ff5b52;
+  box-shadow: 0 0 0 15rpx rgba(255, 91, 82, 0.12);
+}
+
+.decision-note {
+  color: #2f3542;
+  font-size: 24rpx;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.decision-sub {
+  margin-top: 8rpx;
+  color: #6d7788;
+  font-size: 22rpx;
+  line-height: 1.4;
+}
+
+.metric-list {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.74);
+  border-left: 1rpx solid rgba(37, 76, 123, 0.08);
+  border-radius: 20rpx;
+}
+
+.metric-row {
+  min-height: 82rpx;
+  padding: 0 16rpx;
+  display: flex;
+  align-items: center;
+  color: #242a35;
+}
+
+.metric-row + .metric-row {
+  border-top: 1rpx solid rgba(37, 76, 123, 0.08);
+}
+
+.metric-icon {
+  flex: 0 0 40rpx;
+  width: 31rpx;
+  height: 31rpx;
+  margin-right: 12rpx;
+}
+
+.metric-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10rpx;
+}
+
+.metric-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: #485365;
+  font-size: 23rpx;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric-value {
+  flex: 0 0 auto;
+  max-width: 158rpx;
+  overflow: hidden;
+  color: #232936;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-head {
+  margin: 34rpx 4rpx 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.section-title-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.section-icon {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 12rpx;
+  flex: 0 0 auto;
+}
+
+.section-title {
+  overflow: hidden;
+  color: #242a35;
+  font-size: 29rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-link {
+  flex: 0 0 auto;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2f86f6;
+  font-size: 22rpx;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.section-link-icon {
+  width: 25rpx;
+  height: 25rpx;
+  margin-right: 7rpx;
+  flex: 0 0 auto;
+}
+
+.forecast-card {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 24rpx;
+}
+
+.forecast-list {
+  display: flex;
+  align-items: stretch;
+}
+
+.forecast-day {
+  flex: 1;
+  min-width: 0;
+  min-height: 292rpx;
+  padding: 22rpx 4rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #272d38;
+  text-align: center;
+}
+
+.forecast-day + .forecast-day {
+  border-left: 1rpx solid rgba(37, 76, 123, 0.08);
+}
+
+.forecast-day.today {
+  background: linear-gradient(180deg, rgba(235, 255, 244, 0.95), rgba(247, 255, 250, 0.95));
+  box-shadow: inset 0 0 0 2rpx rgba(52, 198, 108, 0.2);
+}
+
+.day-heading {
+  min-height: 58rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.day-name {
+  color: #242a35;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.day-date {
+  margin-top: 8rpx;
+  color: #576273;
+  font-size: 19rpx;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.weather-icon {
+  width: 58rpx;
+  height: 58rpx;
+  margin-top: 16rpx;
+}
+
+.day-temp {
+  margin-top: 15rpx;
+  color: #2d3440;
+  font-size: 19rpx;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.wash-badge {
+  max-width: 90rpx;
+  min-width: 66rpx;
+  height: 34rpx;
+  margin-top: 18rpx;
+  padding: 0 5rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #17a454;
+  background: rgba(52, 198, 108, 0.14);
+  border-radius: 17rpx;
+  font-size: 17rpx;
+  font-weight: 500;
+  line-height: 1;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.forecast-day.best .wash-badge {
+  color: #0c9c48;
+  background: rgba(52, 198, 108, 0.16);
+}
+
+.forecast-day.avoid .wash-badge {
+  color: #ff4c45;
+  background: rgba(255, 76, 69, 0.12);
+}
+
+.day-face-icon {
+  width: 34rpx;
+  height: 34rpx;
+  margin-top: 14rpx;
+}
+
+.tip-card {
+  margin-top: 34rpx;
+  padding: 24rpx 28rpx;
+  display: flex;
+  align-items: center;
+  border-radius: 24rpx;
+}
+
+.tip-illustration {
+  position: relative;
+  flex: 0 0 210rpx;
+  width: 210rpx;
+  height: 132rpx;
+  margin-right: 26rpx;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(89, 175, 255, 0.42);
+}
+
+.b1 {
+  left: 12rpx;
+  top: 38rpx;
+  width: 18rpx;
+  height: 18rpx;
+}
+
+.b2 {
+  left: 46rpx;
+  top: 16rpx;
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.b3 {
+  right: 30rpx;
+  top: 6rpx;
+  width: 34rpx;
+  height: 34rpx;
+}
+
+.car-body {
+  position: absolute;
+  left: 34rpx;
+  bottom: 20rpx;
+  width: 136rpx;
+  height: 72rpx;
+  background: linear-gradient(180deg, #e8f5ff, #8dc9ff);
+  border-radius: 38rpx 38rpx 22rpx 22rpx;
+  box-shadow: inset 0 -8rpx 0 rgba(40, 122, 210, 0.2);
+}
+
+.car-window {
+  position: absolute;
+  left: 34rpx;
+  top: 10rpx;
+  width: 68rpx;
+  height: 28rpx;
+  background: #1a4278;
+  border-radius: 18rpx 18rpx 8rpx 8rpx;
+}
+
+.car-light {
+  position: absolute;
+  bottom: 16rpx;
+  width: 17rpx;
+  height: 11rpx;
+  background: #f9fdff;
+  border-radius: 8rpx;
+}
+
+.car-light.left {
+  left: 18rpx;
+}
+
+.car-light.right {
+  right: 18rpx;
+}
+
+.bucket {
+  position: absolute;
+  right: 8rpx;
+  bottom: 12rpx;
+  width: 42rpx;
+  height: 52rpx;
+  background: linear-gradient(180deg, #8bd5ff, #2f9af4);
+  border-radius: 8rpx 8rpx 15rpx 15rpx;
+  transform: skew(-7deg);
+}
+
+.tip-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.tip-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.tip-drop {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 10rpx;
+  flex: 0 0 auto;
+}
+
+.tip-title {
+  color: #2f86f6;
+  font-size: 31rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tip-text {
+  display: block;
+  margin-top: 18rpx;
+  color: #2f3542;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.record-button {
+  height: 82rpx;
+  margin-top: 26rpx;
+  border-radius: 41rpx;
+  font-size: 27rpx;
+}
+
+.primary-button {
+  min-width: 0;
+  height: 82rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #1d8cff;
+  border-radius: 41rpx;
+  box-shadow: 0 16rpx 32rpx rgba(29, 140, 255, 0.28);
+  font-size: 27rpx;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.error-card {
+  margin-top: -64rpx;
+  padding: 46rpx 34rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.error-title {
+  color: #242a35;
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.error-text {
+  color: #667386;
+  font-size: 26rpx;
+  line-height: 1.55;
+}

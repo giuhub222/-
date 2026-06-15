@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "洗车指数查询",
+  "navigationBarBackgroundColor": "#2f86f6",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true
+}

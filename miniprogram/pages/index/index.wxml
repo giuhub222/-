@@ -1,0 +1,121 @@
+<view class="page-shell index-page">
+  <view class="blue-hero">
+    <view class="top-bar">
+      <button class="city-entry" bindtap="goCity">
+        <image class="city-pin" src="/assets/icons/ui/map-pin-white.svg" mode="aspectFit" />
+        <text class="city-name">{{city.name}}</text>
+        <image class="city-arrow" src="/assets/icons/ui/chevron-down-white.svg" mode="aspectFit" />
+      </button>
+      <view class="update-time">
+        <text>{{advice.updatedText || "正在更新"}}</text>
+        <button class="refresh-button" bindtap="refreshAdvice">
+          <image class="refresh-icon" src="/assets/icons/ui/refresh-white.svg" mode="aspectFit" />
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="center-state glass-card">
+    <view class="spinner"></view>
+    <text>正在读取天气</text>
+  </view>
+
+  <view wx:elif="{{error}}" class="error-card glass-card">
+    <text class="error-title">暂时无法获取建议</text>
+    <text class="error-text">{{error}}</text>
+    <button class="primary-button" bindtap="refreshAdvice">重试</button>
+  </view>
+
+  <block wx:else>
+    <view class="today-card glass-card">
+      <view class="today-main">
+        <view class="today-left">
+          <text class="today-title">{{advice.todayTitle}}</text>
+          <text class="decision-main {{advice.decisionLevel}}">{{advice.displayDecision}}</text>
+          <view class="face-large {{advice.decisionLevel}}">
+            <image class="decision-icon" src="{{advice.decisionIcon}}" mode="aspectFit" />
+          </view>
+          <text class="decision-note">{{advice.headline}}</text>
+          <text class="decision-sub">{{advice.subline}}</text>
+        </view>
+        <view class="metric-list">
+          <view wx:for="{{advice.todayMetrics}}" wx:key="name" class="metric-row">
+            <image class="metric-icon" src="{{item.icon}}" mode="aspectFit" />
+            <view class="metric-copy">
+              <text class="metric-name">{{item.name}}</text>
+              <text class="metric-value">{{item.value}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-head">
+      <view class="section-title-wrap">
+        <image class="section-icon" src="/assets/icons/ui/calendar-blue.svg" mode="aspectFit" />
+        <text class="section-title">一周洗车指数预报</text>
+      </view>
+      <button class="section-link" bindtap="showReason">
+        <image class="section-link-icon" src="/assets/icons/ui/info-blue.svg" mode="aspectFit" />
+        <text>洗车指数说明</text>
+      </button>
+    </view>
+
+    <view class="forecast-card glass-card">
+      <view class="forecast-list">
+        <view
+          wx:for="{{advice.forecast}}"
+          wx:key="date"
+          class="forecast-day {{item.isToday ? 'today' : ''}} {{item.washLevel}}"
+        >
+          <view class="day-heading">
+            <text class="day-name">{{item.dayName}}</text>
+            <text class="day-date">{{item.dateShort}}</text>
+          </view>
+          <image class="weather-icon" src="{{item.weatherIcon}}" mode="aspectFit" />
+          <text class="day-temp">{{item.tempMin}}~{{item.tempMax}}°</text>
+          <text class="wash-badge">{{item.washLabel}}</text>
+          <image class="day-face-icon" src="{{item.faceIcon}}" mode="aspectFit" />
+        </view>
+      </view>
+    </view>
+
+    <view class="tip-card glass-card">
+      <view class="tip-illustration">
+        <view class="bubble b1"></view>
+        <view class="bubble b2"></view>
+        <view class="bubble b3"></view>
+        <view class="car-body">
+          <view class="car-window"></view>
+          <view class="car-light left"></view>
+          <view class="car-light right"></view>
+        </view>
+        <view class="bucket"></view>
+      </view>
+      <view class="tip-copy">
+        <view class="tip-title-row">
+          <image class="tip-drop" src="/assets/icons/ui/droplet-blue.svg" mode="aspectFit" />
+          <text class="tip-title">洗车小贴士</text>
+        </view>
+        <text class="tip-text">洗车后建议保持车身干燥，避免阳光暴晒，可延长车漆光泽度和保护效果。</text>
+      </view>
+    </view>
+
+    <button class="primary-button record-button" bindtap="handleRecordWash">我今天洗车了</button>
+  </block>
+
+  <view class="bottom-nav">
+    <button class="bottom-nav-item nav-slot-1 active">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-active.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">洗车指数</text>
+    </button>
+    <button class="bottom-nav-item nav-slot-2" bindtap="goRecord">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-muted.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">洗车记录</text>
+    </button>
+    <button class="bottom-nav-item nav-slot-3" bindtap="goAbout">
+      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-muted.svg" mode="aspectFit" />
+      <text class="bottom-nav-label">我的</text>
+    </button>
+  </view>
+</view>
