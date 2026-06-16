@@ -1,41 +1,72 @@
-<view class="page-shell">
-  <view class="hero glass-card">
-    <text class="eyebrow">记录</text>
-    <text class="title">上次洗车</text>
-    <text class="big">{{lastWashText}}</text>
-    <button class="primary-button" bindtap="addToday">我今天洗车了</button>
-  </view>
-
-  <view class="section-head">
-    <text>历史记录</text>
-    <button wx:if="{{records.length}}" bindtap="clearAll">清空</button>
-  </view>
-
-  <view wx:if="{{!records.length}}" class="empty glass-card">
-    <text>还没有记录</text>
-    <text class="muted">记录一次洗车后，首页会用它展示“上次洗车”。</text>
-  </view>
-
-  <view wx:else class="record-list">
-    <view wx:for="{{records}}" wx:key="date" class="record-row glass-card">
-      <view>
-        <text class="record-date">{{item.date}}</text>
-        <text class="record-source">本机记录</text>
-      </view>
-      <text class="record-ago">{{item.ago}}</text>
+<view class="page-shell record-page">
+  <view class="record-filter-row">
+    <view class="record-filter active">
+      <text>全部</text>
+      <text class="filter-arrow">▾</text>
     </view>
   </view>
 
+  <view class="timeline-heading">
+    <view>
+      <text class="timeline-title">时间轴记录</text>
+      <text class="timeline-count">{{records.length}} 条本机记录</text>
+    </view>
+    <text class="timeline-month-label">{{summary.monthLabel}}</text>
+  </view>
+
+  <view wx:if="{{!records.length}}" class="empty-state glass-card">
+    <text class="empty-title">还没有洗车记录</text>
+    <text class="empty-text">点击右下角“记一笔”，首页就能显示上次洗车时间。</text>
+  </view>
+
+  <view wx:else class="timeline-wrap">
+    <view wx:for="{{groups}}" wx:key="monthKey" wx:for-item="group" class="timeline-month">
+      <text class="month-title">{{group.monthLabel}}</text>
+      <view class="timeline-list">
+        <view wx:for="{{group.items}}" wx:key="date" wx:for-item="record" class="timeline-item">
+          <view class="time-col">
+            <text class="time-date">{{record.dateShort}}</text>
+            <text class="time-week">{{record.weekday}}</text>
+            <text class="time-clock">{{record.timeText}}</text>
+          </view>
+          <view class="line-col">
+            <text class="timeline-dot {{record.dotTone}}"></text>
+            <text class="timeline-line"></text>
+          </view>
+          <view class="record-card glass-card">
+            <view class="record-icon {{record.dotTone}}">
+              <image src="/assets/icons/ui/car-white.svg" mode="aspectFit" />
+            </view>
+            <view class="record-info">
+              <view class="record-title-row">
+                <text class="record-title">{{record.title}}</text>
+                <text class="record-badge {{record.badgeTone}}">{{record.badge}}</text>
+              </view>
+              <text class="record-detail">{{record.detailText}}</text>
+              <text class="record-meta">{{record.storeName}} · {{record.ago}}</text>
+            </view>
+            <text class="record-status">{{record.statusText}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <button class="floating-add" bindtap="addToday" hover-class="none">
+    <text class="floating-plus">+</text>
+    <text>记一笔</text>
+  </button>
+
   <view class="bottom-nav">
-    <button class="bottom-nav-item nav-slot-1" bindtap="goIndex">
+    <button class="bottom-nav-item nav-slot-1" bindtap="goIndex" hover-class="none">
       <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-muted.svg" mode="aspectFit" />
       <text class="bottom-nav-label">洗车指数</text>
     </button>
-    <button class="bottom-nav-item nav-slot-2 active">
+    <button class="bottom-nav-item nav-slot-2 active" hover-class="none">
       <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-active.svg" mode="aspectFit" />
       <text class="bottom-nav-label">洗车记录</text>
     </button>
-    <button class="bottom-nav-item nav-slot-3" bindtap="goAbout">
+    <button class="bottom-nav-item nav-slot-3" bindtap="goAbout" hover-class="none">
       <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-muted.svg" mode="aspectFit" />
       <text class="bottom-nav-label">我的</text>
     </button>

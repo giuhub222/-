@@ -1,8 +1,42 @@
 const regions = require("../../utils/regions");
 const { defaultCity } = require("../../utils/config");
+const { searchCity } = require("../../utils/api");
 const { getStoredCity, setStoredCity } = require("../../utils/storage");
 
 const cityCache = {};
+let searchPresetCache = null;
+
+function comparableName(name) {
+  return String(name || "")
+    .trim()
+    .replace(/(特别行政区|维吾尔自治区|壮族自治区|回族自治区|自治区|省|市|区|县)$/g, "");
+}
+
+function isSameName(left, right) {
+  const leftText = String(left || "").trim();
+  const rightText = String(right || "").trim();
+  if (!leftText || !rightText) return false;
+  return leftText === rightText || comparableName(leftText) === comparableName(rightText);
+}
+
+function uniqueRegionParts(parts) {
+  return parts.filter(Boolean).reduce((result, part) => {
+    if (!result.some(item => isSameName(item, part))) {
+      result.push(part);
+    }
+    return result;
+  }, []);
+}
+
+function formatCityLabel(city) {
+  const parts = uniqueRegionParts([city.adm1, city.adm2, city.area || city.name]);
+  return parts.length ? parts.join(" · ") : city.name || "请选择城市";
+}
+
+function formatSearchMeta(city) {
+  const parts = uniqueRegionParts([city.adm1, city.adm2]);
+  return parts.length ? parts.join(" · ") : city.fullName || "中国";
+}
 
 function getCities(provinceIndex) {
   const province = regions[provinceIndex] || regions[0];
@@ -71,7 +105,7 @@ function cityFromRegion(value) {
 }
 
 function findIndexByName(items, name) {
-  return items.findIndex(item => item.name === name || item.name.replace(/市$/, "") === name);
+  return items.findIndex(item => isSameName(item.name, name));
 }
 
 function findInitialValue(storedCity) {
@@ -124,9 +158,72 @@ function selectorData(regionValue) {
   };
 }
 
+function cityLevelPreset(province, city) {
+  const cityData = {
+    id: city.code,
+    gbCode: city.code,
+    name: city.name,
+    adm1: province.name,
+    adm2: city.name,
+    area: city.name
+  };
+  return {
+    ...cityData,
+    fullName: formatCityLabel(cityData)
+  };
+}
+
+function countyLevelPreset(province, city, county) {
+  const cityData = {
+    id: county.code,
+    gbCode: county.code,
+    name: county.name,
+    adm1: province.name,
+    adm2: city.name,
+    area: county.name
+  };
+  return {
+    ...cityData,
+    fullName: formatCityLabel(cityData)
+  };
+}
+
+function getSearchPresets() {
+  if (searchPresetCache) return searchPresetCache;
+  searchPresetCache = [];
+  regions.forEach((province, provinceIndex) => {
+    getCities(provinceIndex).forEach(city => {
+      searchPresetCache.push(cityLevelPreset(province, city));
+      (city.children || []).forEach(county => {
+        searchPresetCache.push(countyLevelPreset(province, city, county));
+      });
+    });
+  });
+  return searchPresetCache;
+}
+
+function normalizeSearchResult(item) {
+  const id = String(item.id || item.weatherId || item.gbCode || item.areaCode || "");
+  const city = {
+    id,
+    gbCode: item.gbCode || item.areaCode || (/^\d{6}$/.test(id) ? id : ""),
+    weatherId: item.weatherId || (/^\d{9}$/.test(id) ? id : ""),
+    name: item.name || item.area || item.adm2 || item.adm1 || "",
+    adm1: item.adm1 || item.province || "",
+    adm2: item.adm2 || item.city || "",
+    area: item.area || item.name || "",
+    fullName: item.fullName || ""
+  };
+  city.fullName = city.fullName || formatCityLabel(city);
+  city.displayName = city.name || city.fullName;
+  city.metaText = formatSearchMeta(city);
+  return city;
+}
+
 Page({
   data: {
     selectedCity: defaultCity,
+    currentCityText: formatCityLabel(defaultCity),
     regionValue: [0, 0, 0],
     selectedRegionText: "",
     selectorOpen: false,
@@ -135,7 +232,14 @@ Page({
     countyList: [],
     provinceAnchor: "",
     cityAnchor: "",
-    countyAnchor: ""
+    countyAnchor: "",
+    searchKeyword: "",
+    hasSearchKeyword: false,
+    searchFocused: false,
+    searchTouched: false,
+    searchLoading: false,
+    searchError: "",
+    searchResults: []
   },
 
   onLoad() {
@@ -143,9 +247,15 @@ Page({
     const regionValue = normalizeValue(...findInitialValue(selectedCity));
     this.setData({
       selectedCity,
+      currentCityText: selectedCity.fullName || formatCityLabel(selectedCity),
       regionValue,
       ...selectorData(regionValue)
     });
+  },
+
+  onUnload() {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchToken = (this.searchToken || 0) + 1;
   },
 
   toggleSelector() {
@@ -177,8 +287,130 @@ Page({
     setStoredCity(city);
     this.setData({
       selectedCity: city,
+      currentCityText: city.fullName || selectedText(regionValue),
       regionValue,
       selectorOpen: false,
+      searchKeyword: "",
+      hasSearchKeyword: false,
+      searchTouched: false,
+      searchLoading: false,
+      searchError: "",
+      searchResults: [],
+      ...selectorData(regionValue)
+    });
+    wx.showToast({ title: "已切换城市", icon: "success" });
+    setTimeout(() => this.returnToIndex(), 350);
+  },
+
+  handleSearchFocus() {
+    this.setData({ searchFocused: true });
+  },
+
+  handleSearchBlur() {
+    this.setData({ searchFocused: false });
+  },
+
+  handleSearchInput(event) {
+    const keyword = event.detail.value || "";
+    const hasSearchKeyword = Boolean(String(keyword).trim());
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchToken = (this.searchToken || 0) + 1;
+
+    this.setData({
+      searchKeyword: keyword,
+      hasSearchKeyword,
+      searchTouched: hasSearchKeyword,
+      searchLoading: hasSearchKeyword,
+      searchError: "",
+      searchResults: []
+    });
+
+    if (!hasSearchKeyword) {
+      this.setData({
+        searchLoading: false,
+        searchError: ""
+      });
+      return;
+    }
+
+    this.searchTimer = setTimeout(() => {
+      this.runCitySearch(keyword);
+    }, 300);
+  },
+
+  handleSearchConfirm() {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.runCitySearch(this.data.searchKeyword);
+  },
+
+  retrySearch() {
+    this.runCitySearch(this.data.searchKeyword);
+  },
+
+  clearSearch() {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchToken = (this.searchToken || 0) + 1;
+    this.setData({
+      searchKeyword: "",
+      hasSearchKeyword: false,
+      searchTouched: false,
+      searchLoading: false,
+      searchError: "",
+      searchResults: []
+    });
+  },
+
+  async runCitySearch(keyword) {
+    const text = String(keyword || "").trim();
+    if (!text) {
+      this.clearSearch();
+      return;
+    }
+
+    const token = (this.searchToken || 0) + 1;
+    this.searchToken = token;
+    this.setData({
+      searchTouched: true,
+      searchLoading: true,
+      searchError: "",
+      searchResults: []
+    });
+
+    try {
+      const results = await searchCity(text, getSearchPresets());
+      if (this.searchToken !== token) return;
+      this.setData({
+        searchLoading: false,
+        searchResults: (results || []).slice(0, 20).map(normalizeSearchResult)
+      });
+    } catch (error) {
+      if (this.searchToken !== token) return;
+      this.setData({
+        searchLoading: false,
+        searchError: error.message || "城市搜索失败，请稍后重试",
+        searchResults: []
+      });
+    }
+  },
+
+  handleSearchResultTap(event) {
+    const index = Number(event.currentTarget.dataset.index);
+    const city = normalizeSearchResult(this.data.searchResults[index] || {});
+    if (!city.name && !city.adm2 && !city.adm1) return;
+
+    const regionValue = normalizeValue(...findInitialValue(city));
+    setStoredCity(city);
+    this.setData({
+      selectedCity: city,
+      currentCityText: city.fullName || formatCityLabel(city),
+      regionValue,
+      selectorOpen: false,
+      searchKeyword: city.displayName || city.name,
+      hasSearchKeyword: Boolean(city.displayName || city.name),
+      searchTouched: false,
+      searchLoading: false,
+      searchError: "",
+      searchResults: [],
       ...selectorData(regionValue)
     });
     wx.showToast({ title: "已切换城市", icon: "success" });

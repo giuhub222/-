@@ -5,10 +5,64 @@
     <text class="subtitle">选好常用位置后，首页会按当地天气给出洗车建议。</text>
   </view>
 
+  <view class="search-card glass-card">
+    <view class="search-field {{searchFocused ? 'focused' : ''}}">
+      <text class="search-mark">搜</text>
+      <input
+        class="search-input"
+        value="{{searchKeyword}}"
+        placeholder="搜索城市、区县"
+        placeholder-class="search-placeholder"
+        confirm-type="search"
+        bindinput="handleSearchInput"
+        bindconfirm="handleSearchConfirm"
+        bindfocus="handleSearchFocus"
+        bindblur="handleSearchBlur"
+      />
+      <button
+        wx:if="{{hasSearchKeyword}}"
+        class="search-clear"
+        hover-class="none"
+        bindtap="clearSearch"
+      >×</button>
+    </view>
+
+    <view wx:if="{{searchLoading}}" class="search-state">
+      <view class="search-spinner"></view>
+      <text>正在搜索城市</text>
+    </view>
+
+    <view wx:elif="{{searchError}}" class="search-state search-state-error">
+      <text class="search-state-text">{{searchError}}</text>
+      <button class="search-retry" hover-class="none" bindtap="retrySearch">重试</button>
+    </view>
+
+    <view wx:elif="{{searchTouched && hasSearchKeyword && searchResults.length === 0}}" class="search-state">
+      <text>没有找到匹配城市</text>
+    </view>
+
+    <view wx:elif="{{searchResults.length > 0}}" class="search-results">
+      <button
+        wx:for="{{searchResults}}"
+        wx:key="id"
+        class="search-result-row"
+        hover-class="search-result-hover"
+        data-index="{{index}}"
+        bindtap="handleSearchResultTap"
+      >
+        <view class="search-result-copy">
+          <text class="search-result-name">{{item.displayName}}</text>
+          <text class="search-result-meta">{{item.metaText}}</text>
+        </view>
+        <text class="search-result-action">选择</text>
+      </button>
+    </view>
+  </view>
+
   <view class="region-picker glass-card" bindtap="toggleSelector">
     <view>
       <text class="picker-label">当前选择</text>
-      <text class="picker-value">{{selectedRegionText}}</text>
+      <text class="picker-value">{{currentCityText}}</text>
     </view>
     <text class="picker-action">{{selectorOpen ? "收起" : "更换"}}</text>
   </view>

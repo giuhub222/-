@@ -1,14 +1,14 @@
 <view class="page-shell index-page">
   <view class="blue-hero">
     <view class="top-bar">
-      <button class="city-entry" bindtap="goCity">
+      <button class="city-entry" hover-class="none" bindtap="goCity">
         <image class="city-pin" src="/assets/icons/ui/map-pin-white.svg" mode="aspectFit" />
         <text class="city-name">{{city.name}}</text>
         <image class="city-arrow" src="/assets/icons/ui/chevron-down-white.svg" mode="aspectFit" />
       </button>
       <view class="update-time">
-        <text>{{advice.updatedText || "正在更新"}}</text>
-        <button class="refresh-button" bindtap="refreshAdvice">
+        <text class="update-time-text">{{advice.updatedText || "正在更新"}}</text>
+        <button class="refresh-button" hover-class="none" bindtap="refreshAdvice">
           <image class="refresh-icon" src="/assets/icons/ui/refresh-white.svg" mode="aspectFit" />
         </button>
       </view>
@@ -82,15 +82,7 @@
 
     <view class="tip-card glass-card">
       <view class="tip-illustration">
-        <view class="bubble b1"></view>
-        <view class="bubble b2"></view>
-        <view class="bubble b3"></view>
-        <view class="car-body">
-          <view class="car-window"></view>
-          <view class="car-light left"></view>
-          <view class="car-light right"></view>
-        </view>
-        <view class="bucket"></view>
+        <image class="tip-illustration-image" src="/assets/images/car-wash-tip.png" mode="aspectFit" />
       </view>
       <view class="tip-copy">
         <view class="tip-title-row">
@@ -101,7 +93,6 @@
       </view>
     </view>
 
-    <button class="primary-button record-button" bindtap="handleRecordWash">我今天洗车了</button>
   </block>
 
   <view class="bottom-nav">

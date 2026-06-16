@@ -3,7 +3,6 @@ const { getWashAdvice } = require("../../utils/api");
 const {
   getStoredCity,
   getWashRecords,
-  recordWashToday,
   daysSince
 } = require("../../utils/storage");
 
@@ -60,12 +59,6 @@ Page({
         error: error.message || "天气服务暂时不可用"
       });
     }
-  },
-
-  handleRecordWash() {
-    recordWashToday();
-    this.loadLocalState();
-    wx.showToast({ title: "已记录", icon: "success" });
   },
 
   showReason() {

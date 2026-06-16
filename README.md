@@ -22,6 +22,7 @@
 │   └── utils/                # 配置、存储、云函数调用
 ├── cloudfunctions/
 │   ├── getWashAdvice/        # 获取 7 天天气并计算洗车建议
+│   ├── login/                # 获取微信用户 openid
 │   └── searchCity/           # 搜索和风天气城市 ID
 └── docs/                     # 上架与测试说明
 ```
@@ -80,6 +81,7 @@ QWEATHER_API_HOST=你的和风天气API Host
 然后分别上传并部署：
 
 - `cloudfunctions/getWashAdvice`
+- `cloudfunctions/login`
 - `cloudfunctions/searchCity`
 
 ## 上架前注意

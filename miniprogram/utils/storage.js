@@ -1,5 +1,6 @@
 const CITY_KEY = "wash_city";
 const RECORDS_KEY = "wash_records";
+const USER_KEY = "wash_user";
 
 function getStoredCity(defaultCity) {
   return wx.getStorageSync(CITY_KEY) || defaultCity;
@@ -38,6 +39,18 @@ function clearWashRecords() {
   wx.removeStorageSync(RECORDS_KEY);
 }
 
+function getStoredUser() {
+  return wx.getStorageSync(USER_KEY) || null;
+}
+
+function setStoredUser(user) {
+  wx.setStorageSync(USER_KEY, user);
+}
+
+function clearStoredUser() {
+  wx.removeStorageSync(USER_KEY);
+}
+
 function daysSince(dateString) {
   if (!dateString) return null;
   const start = new Date(`${dateString}T00:00:00`);
@@ -52,6 +65,9 @@ module.exports = {
   getWashRecords,
   recordWashToday,
   clearWashRecords,
+  getStoredUser,
+  setStoredUser,
+  clearStoredUser,
   daysSince,
   todayString
 };
