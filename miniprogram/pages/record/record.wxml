@@ -1,74 +1,348 @@
-<view class="page-shell record-page">
-  <view class="record-filter-row">
-    <view class="record-filter active">
-      <text>全部</text>
-      <text class="filter-arrow">▾</text>
+<view class="record-page">
+  <view class="record-topbar" style="height: {{headerHeight}}px;">
+    <view class="record-status-space" style="height: {{statusBarHeight}}px;"></view>
+    <view
+      class="record-topbar-row"
+      style="height: {{navBarHeight}}px; grid-template-columns: {{capsuleSafeWidth}}px minmax(0, 1fr) {{capsuleSafeWidth}}px;"
+    >
+      <view class="record-nav-balance-slot"></view>
+      <view class="record-nav-title-slot">
+        <text class="record-topbar-title">洗车记录</text>
+      </view>
+      <view class="record-nav-capsule-slot"></view>
+    </view>
+    <view class="record-topbar-divider"></view>
+  </view>
+
+  <scroll-view
+    class="record-scroll"
+    style="top: {{headerHeight}}px;"
+    scroll-y
+    enhanced
+    scroll-top="{{scrollTop}}"
+    show-scrollbar="{{false}}"
+  >
+    <view class="record-content">
+      <view class="record-tabs">
+        <view
+          wx:for="{{tabs}}"
+          wx:key="key"
+          class="record-tab {{activeTab === item.key ? 'active' : ''}}"
+          hover-class="none"
+          data-key="{{item.key}}"
+          bindtap="switchTab"
+          aria-role="button"
+          aria-label="{{item.label}}"
+        >
+          <text class="record-tab-label">{{item.label}}</text>
+        </view>
+      </view>
+
+  <view wx:if="{{loadState === 'loading'}}" class="state-card loading-card">
+    <view class="skeleton skeleton-title"></view>
+    <view class="skeleton-grid">
+      <view wx:for="{{[1,2,3,4]}}" wx:key="*this" class="skeleton skeleton-block"></view>
     </view>
   </view>
 
-  <view class="timeline-heading">
-    <view>
-      <text class="timeline-title">时间轴记录</text>
-      <text class="timeline-count">{{records.length}} 条本机记录</text>
-    </view>
-    <text class="timeline-month-label">{{summary.monthLabel}}</text>
+  <view wx:elif="{{loadState === 'error'}}" class="state-card error-card">
+    <text class="state-title">记录加载失败</text>
+    <text class="state-description">{{loadError || '请稍后重试'}}</text>
+    <button class="state-action secondary" bindtap="retryRecords" hover-class="button-hover">重新加载</button>
   </view>
 
-  <view wx:if="{{!records.length}}" class="empty-state glass-card">
-    <text class="empty-title">还没有洗车记录</text>
-    <text class="empty-text">点击右下角“记一笔”，首页就能显示上次洗车时间。</text>
-  </view>
-
-  <view wx:else class="timeline-wrap">
-    <view wx:for="{{groups}}" wx:key="monthKey" wx:for-item="group" class="timeline-month">
-      <text class="month-title">{{group.monthLabel}}</text>
-      <view class="timeline-list">
-        <view wx:for="{{group.items}}" wx:key="date" wx:for-item="record" class="timeline-item">
-          <view class="time-col">
-            <text class="time-date">{{record.dateShort}}</text>
-            <text class="time-week">{{record.weekday}}</text>
-            <text class="time-clock">{{record.timeText}}</text>
-          </view>
-          <view class="line-col">
-            <text class="timeline-dot {{record.dotTone}}"></text>
-            <text class="timeline-line"></text>
-          </view>
-          <view class="record-card glass-card">
-            <view class="record-icon {{record.dotTone}}">
-              <image src="/assets/icons/ui/car-white.svg" mode="aspectFit" />
-            </view>
-            <view class="record-info">
-              <view class="record-title-row">
-                <text class="record-title">{{record.title}}</text>
-                <text class="record-badge {{record.badgeTone}}">{{record.badge}}</text>
+  <block wx:else>
+    <view wx:if="{{activeTab !== 'month'}}" class="overview-card {{activeTab === 'all' ? 'overview-card-all' : ''}} {{activeTab === 'analysis' ? 'stats-overview-card' : ''}}">
+      <view wx:if="{{activeTab === 'all'}}" class="overview-hero">
+        <picker
+          class="overview-month-picker"
+          mode="date"
+          fields="month"
+          value="{{selectedMonthKey}}"
+          bindchange="onOverviewMonthChange"
+        >
+          <view class="overview-selector" hover-class="overview-selector-hover">
+            <view class="overview-selector-copy">
+              <view class="overview-month-row">
+                <text class="overview-month">{{selectedMonthLabel}}</text>
+                <text class="overview-chevron">▼</text>
               </view>
-              <text class="record-detail">{{record.detailText}}</text>
-              <text class="record-meta">{{record.storeName}} · {{record.ago}}</text>
+              <text class="overview-subtitle">本月概览</text>
             </view>
-            <text class="record-status">{{record.statusText}}</text>
+          </view>
+        </picker>
+        <view class="overview-spark spark-a"></view>
+        <view class="overview-spark spark-b"></view>
+        <view class="overview-spark spark-c"></view>
+        <image class="overview-image" src="/assets/images/car-wash-tip.png" mode="aspectFit" />
+      </view>
+
+      <view wx:else class="stats-summary-head">
+        <text class="section-title">本月统计</text>
+        <text class="section-subtitle">{{selectedMonthLabel}} · 关键指标</text>
+      </view>
+
+      <view class="overview-panel {{activeTab === 'analysis' ? 'stats-overview-panel' : ''}}">
+        <view
+          wx:for="{{overviewCards}}"
+          wx:key="label"
+          class="overview-metric metric-{{index}}"
+        >
+          <text class="metric-label">{{item.label}}</text>
+          <text class="metric-value">{{item.valueText}}</text>
+          <text class="metric-foot-value {{item.footnoteTone}}">{{item.footnoteValue}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{activeTab !== 'analysis' && (activeTab === 'all' ? overviewGroupCards.length : groupCards.length)}}" class="month-group-list">
+      <view wx:for="{{activeTab === 'all' ? overviewGroupCards : groupCards}}" wx:key="monthKey" class="month-group {{activeTab === 'all' ? 'overview-month-group' : ''}} {{item.expanded ? 'expanded' : 'collapsed'}}">
+        <view class="month-group-head">
+          <view class="month-group-head-row">
+            <text class="month-group-title">{{item.monthLabel}}</text>
+            <view class="month-group-action-slot">
+              <button
+                wx:if="{{index === 0}}"
+                class="month-add-button"
+                hover-class="button-hover"
+                bindtap="openRecordForm"
+              >+ 添加记录</button>
+              <view wx:else class="month-add-button-placeholder"></view>
+            </view>
+          </view>
+          <view class="month-group-head-row">
+            <text class="month-group-summary">共{{item.count}}次 · {{item.totalCostText}}</text>
+            <view class="month-group-action-slot">
+              <view
+                class="month-group-toggle-button"
+                hover-class="month-head-hover"
+                data-key="{{item.monthKey}}"
+                bindtap="toggleMonthSection"
+                aria-role="button"
+                aria-label="{{item.expanded ? '收起' : (activeTab === 'all' ? '查看' + item.count + '条记录' : '展开')}}"
+              >
+                <text class="month-group-toggle-label">{{item.expanded ? "收起" : (activeTab === "all" ? "查看" + item.count + "条记录" : "展开")}}</text>
+                <image
+                  class="month-group-toggle-icon {{item.expanded ? 'is-expanded' : ''}}"
+                  src="/assets/icons/ui/chevron-right-gray.svg"
+                  mode="aspectFit"
+                />
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view wx:if="{{item.expanded}}" class="service-list">
+          <view wx:for="{{item.items}}" wx:key="recordKey" class="service-card">
+            <view class="service-icon-shell">
+              <image class="service-icon" src="{{item.icon}}" mode="aspectFit" />
+            </view>
+            <view class="service-copy">
+              <text class="service-title">{{item.title}}</text>
+              <view class="service-meta-row">
+                <image class="service-meta-icon" src="/assets/icons/record/map-pin-gray.svg" mode="aspectFit" />
+                <text class="service-meta-text location-meta-text">{{item.locationText}}</text>
+              </view>
+              <view class="service-meta-row">
+                <image class="service-meta-icon" src="/assets/icons/record/calendar-gray.svg" mode="aspectFit" />
+                <text class="service-meta-text">{{item.dateTimeText}}</text>
+              </view>
+            </view>
+            <view class="service-side">
+              <text class="service-price">{{item.priceText}}</text>
+              <text class="service-status">{{item.statusText}}</text>
+            </view>
+            <image class="service-chevron" src="/assets/icons/ui/chevron-right-gray.svg" mode="aspectFit" />
           </view>
         </view>
       </view>
     </view>
-  </view>
 
-  <button class="floating-add" bindtap="addToday" hover-class="none">
-    <text class="floating-plus">+</text>
-    <text>记一笔</text>
-  </button>
+    <view wx:elif="{{activeTab !== 'analysis'}}" class="state-card empty-record-card">
+      <view class="empty-record-icon">＋</view>
+      <text class="state-title">暂无洗车记录</text>
+      <text class="state-description">记录一次洗车后，这里会自动生成统计</text>
+      <button class="state-action" bindtap="openRecordForm" hover-class="button-hover">添加洗车记录</button>
+    </view>
+
+    <view wx:if="{{activeTab !== 'month'}}" class="trend-card {{activeTab === 'analysis' ? 'trend-card-full' : 'trend-card-compact'}}">
+      <view class="section-row">
+        <view class="section-copy">
+          <text class="section-title">消费趋势</text>
+          <text class="section-subtitle">近6个月洗车花费（元）</text>
+        </view>
+      </view>
+
+      <view wx:if="{{hasTrendData}}" class="trend-wrap">
+        <view class="trend-axis">
+          <text class="trend-axis-label axis-0">{{trendAxisLabels[0]}}</text>
+          <text class="trend-axis-label axis-1">{{trendAxisLabels[1]}}</text>
+          <text class="trend-axis-label axis-2">{{trendAxisLabels[2]}}</text>
+          <text class="trend-axis-label axis-3">{{trendAxisLabels[3]}}</text>
+        </view>
+        <view class="trend-plot">
+          <view class="trend-grid-line line-top"></view>
+          <view class="trend-grid-line line-mid"></view>
+          <view class="trend-grid-line line-low"></view>
+          <view class="trend-grid-line line-base solid"></view>
+
+          <view class="trend-bars">
+            <view wx:for="{{trendBars}}" wx:key="monthKey" class="trend-bar-col">
+              <text wx:if="{{item.hasAmount}}" class="trend-bar-value {{item.isCurrent ? 'current' : ''}}">{{item.amountText}}</text>
+              <view wx:else class="trend-bar-value"></view>
+              <view class="trend-bar-shell">
+                <view class="trend-bar-fill {{item.hasAmount ? '' : 'zero'}} {{item.isCurrent ? 'current' : ''}}" style="{{item.heightStyle}}"></view>
+              </view>
+              <text class="trend-bar-label {{item.isCurrent ? 'current' : ''}}">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="trend-empty">
+        <text class="trend-empty-title">暂无消费趋势数据</text>
+      </view>
+    </view>
+    </block>
+    </view>
+  </scroll-view>
+
+  <view
+    wx:if="{{formVisible}}"
+    class="record-sheet-mask"
+    style="top: {{headerHeight}}px;"
+    catchtap="closeRecordForm"
+  >
+    <view class="record-sheet" catchtap="stopTap">
+      <view class="sheet-head">
+        <view class="sheet-head-copy">
+          <text class="sheet-title">添加洗车记录</text>
+          <text class="sheet-subtitle">地点、花费和备注会安全保存在本机</text>
+        </view>
+        <button class="sheet-close" hover-class="button-hover" bindtap="closeRecordForm">×</button>
+      </view>
+
+      <scroll-view class="sheet-body" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="sheet-form">
+          <view class="form-grid">
+            <view class="form-section form-grid-section form-grid-section-left">
+              <view class="form-label">日期</view>
+              <picker mode="date" value="{{form.date}}" data-field="date" bindchange="handleFormPicker">
+                <view class="form-picker-value">{{form.date}}</view>
+              </picker>
+            </view>
+            <view class="form-section form-grid-section">
+              <view class="form-label">时间</view>
+              <picker mode="time" value="{{form.time}}" data-field="time" bindchange="handleFormPicker">
+                <view class="form-picker-value">{{form.time}}</view>
+              </picker>
+            </view>
+          </view>
+
+          <view class="form-section">
+            <view class="form-label">洗车地点</view>
+            <input
+              class="form-input form-location-input"
+              type="text"
+              value="{{form.location}}"
+              data-field="location"
+              maxlength="60"
+              confirm-type="done"
+              placeholder="例如 小区门口 / 门店名"
+              placeholder-class="form-placeholder"
+              bindinput="handleFormInput"
+            />
+          </view>
+
+          <view class="form-section">
+            <view class="form-label">洗车花费</view>
+            <view class="cost-input-wrap">
+              <text class="cost-prefix">¥</text>
+              <input
+                class="form-input cost-input"
+                type="digit"
+                value="{{form.cost}}"
+                data-field="cost"
+                placeholder="0"
+                placeholder-class="form-placeholder"
+                bindinput="handleFormInput"
+              />
+            </view>
+          </view>
+
+          <view class="form-section">
+            <view class="form-label">洗车类型</view>
+            <view class="option-grid">
+              <view
+                wx:for="{{washTypes}}"
+                wx:key="*this"
+                class="option-item option-item-{{index}} {{item === form.washType ? 'active' : ''}}"
+                hover-class="button-hover"
+                data-field="washType"
+                data-value="{{item}}"
+                bindtap="selectFormOption"
+              >{{item}}</view>
+            </view>
+          </view>
+
+          <view class="form-section">
+            <view class="form-label">支付方式</view>
+            <view class="option-grid">
+              <view
+                wx:for="{{paymentMethods}}"
+                wx:key="*this"
+                class="option-item option-item-{{index}} {{item === form.paymentMethod ? 'active' : ''}}"
+                hover-class="button-hover"
+                data-field="paymentMethod"
+                data-value="{{item}}"
+                bindtap="selectFormOption"
+              >{{item}}</view>
+            </view>
+          </view>
+
+          <view class="form-section form-note-section">
+            <view class="form-label">备注</view>
+            <textarea
+              class="form-textarea form-note-textarea"
+              style="height: 188rpx;"
+              value="{{form.note}}"
+              data-field="note"
+              maxlength="80"
+              disable-default-padding="{{true}}"
+              fixed="{{true}}"
+              show-confirm-bar="{{false}}"
+              placeholder="例如 排队久、用了券、内外精洗"
+              placeholder-class="form-placeholder"
+              bindinput="handleFormInput"
+            />
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="sheet-actions">
+        <button class="sheet-primary" hover-class="button-hover" loading="{{formSaving}}" bindtap="saveRecordForm">保存记录</button>
+      </view>
+    </view>
+  </view>
 
   <view class="bottom-nav">
     <button class="bottom-nav-item nav-slot-1" bindtap="goIndex" hover-class="none">
-      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-muted.svg" mode="aspectFit" />
-      <text class="bottom-nav-label">洗车指数</text>
+      <view class="bottom-nav-inner">
+        <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-muted.svg" mode="aspectFit" />
+        <text class="bottom-nav-label">洗车指数</text>
+      </view>
     </button>
     <button class="bottom-nav-item nav-slot-2 active" hover-class="none">
-      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-active.svg" mode="aspectFit" />
-      <text class="bottom-nav-label">洗车记录</text>
+      <view class="bottom-nav-inner">
+        <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-active.svg" mode="aspectFit" />
+        <text class="bottom-nav-label">洗车记录</text>
+      </view>
     </button>
     <button class="bottom-nav-item nav-slot-3" bindtap="goAbout" hover-class="none">
-      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-muted.svg" mode="aspectFit" />
-      <text class="bottom-nav-label">我的</text>
+      <view class="bottom-nav-inner">
+        <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-muted.svg" mode="aspectFit" />
+        <text class="bottom-nav-label">我的</text>
+      </view>
     </button>
   </view>
 </view>

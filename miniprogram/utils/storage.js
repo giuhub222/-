@@ -25,14 +25,45 @@ function todayString(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-function recordWashToday() {
-  const today = todayString();
-  const records = getWashRecords();
-  if (!records.find(item => item.date === today)) {
-    records.unshift({ date: today, source: "manual" });
-    saveWashRecords(records.slice(0, 30));
-  }
+function timeString(date = new Date()) {
+  const hour = `${date.getHours()}`.padStart(2, "0");
+  const minute = `${date.getMinutes()}`.padStart(2, "0");
+  return `${hour}:${minute}`;
+}
+
+function normalizeWashRecord(record = {}) {
+  const now = new Date();
+  const date = record.date || todayString(now);
+  const time = record.time || timeString(now);
+  const createdAt = record.createdAt || now.toISOString();
+  return {
+    id: record.id || `wash_${date.replace(/-/g, "")}_${time.replace(":", "")}_${now.getTime()}`,
+    date,
+    time,
+    source: record.source || "manual",
+    location: String(record.location || "").trim(),
+    cost: String(record.cost || "").trim(),
+    washType: String(record.washType || "").trim(),
+    paymentMethod: String(record.paymentMethod || "").trim(),
+    note: String(record.note || "").trim(),
+    createdAt
+  };
+}
+
+function recordSortValue(record) {
+  return new Date(`${record.date || "1970-01-01"}T${record.time || "00:00"}:00`).getTime();
+}
+
+function addWashRecord(record) {
+  const records = [normalizeWashRecord(record)]
+    .concat(getWashRecords())
+    .sort((left, right) => recordSortValue(right) - recordSortValue(left));
+  saveWashRecords(records.slice(0, 50));
   return getWashRecords();
+}
+
+function recordWashToday() {
+  return addWashRecord({ source: "manual" });
 }
 
 function clearWashRecords() {
@@ -63,11 +94,13 @@ module.exports = {
   getStoredCity,
   setStoredCity,
   getWashRecords,
+  addWashRecord,
   recordWashToday,
   clearWashRecords,
   getStoredUser,
   setStoredUser,
   clearStoredUser,
   daysSince,
-  todayString
+  todayString,
+  timeString
 };

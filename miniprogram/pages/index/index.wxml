@@ -96,17 +96,23 @@
   </block>
 
   <view class="bottom-nav">
-    <button class="bottom-nav-item nav-slot-1 active">
-      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-active.svg" mode="aspectFit" />
-      <text class="bottom-nav-label">洗车指数</text>
+    <button class="bottom-nav-item nav-slot-1 active" hover-class="none">
+      <view class="bottom-nav-inner">
+        <image class="bottom-nav-icon" src="/assets/icons/ui/nav-car-active.svg" mode="aspectFit" />
+        <text class="bottom-nav-label">洗车指数</text>
+      </view>
     </button>
-    <button class="bottom-nav-item nav-slot-2" bindtap="goRecord">
-      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-muted.svg" mode="aspectFit" />
-      <text class="bottom-nav-label">洗车记录</text>
+    <button class="bottom-nav-item nav-slot-2" bindtap="goRecord" hover-class="none">
+      <view class="bottom-nav-inner">
+        <image class="bottom-nav-icon" src="/assets/icons/ui/nav-record-muted.svg" mode="aspectFit" />
+        <text class="bottom-nav-label">洗车记录</text>
+      </view>
     </button>
-    <button class="bottom-nav-item nav-slot-3" bindtap="goAbout">
-      <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-muted.svg" mode="aspectFit" />
-      <text class="bottom-nav-label">我的</text>
+    <button class="bottom-nav-item nav-slot-3" bindtap="goAbout" hover-class="none">
+      <view class="bottom-nav-inner">
+        <image class="bottom-nav-icon" src="/assets/icons/ui/nav-user-muted.svg" mode="aspectFit" />
+        <text class="bottom-nav-label">我的</text>
+      </view>
     </button>
   </view>
 </view>
